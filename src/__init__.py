@@ -1,3 +1,5 @@
+from concurrent.futures import thread
+import threading
 import os
 __ALL__ = ["album", "image", "spider"]
 # 这些是常量，任何时候不可改变
@@ -18,7 +20,7 @@ referer = "https://www.pixiv.net"
 userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0"
 
 albumInfo = "https://www.pixiv.net/ajax/illust/%s/pages?lang=zh"
-authorInfo = "https://www.pixiv.net/ajax/user/%s/profile/all?lang=zh"
+authorInfo = "https://www.pixiv.net/ajax/user/%s/profile/all"
 authorIDAndTags = "https://www.pixiv.net/ajax/illust/%s?lang=zh"
 recommandInfo = "https://www.pixiv.net/ajax/illust/%s/recommend/init?limit=18&lang=zh"
 
@@ -57,8 +59,10 @@ def authorIDAndTagsURL(album_id) -> str:
 
 def download_info(func):
     def infoed_func(*args, **kwargs):
-        print(f"now enter <{func.__name__}>;{type(func)}")
+        nowThread=threading.currentThread()
+
+        print(f"now enter <{func.__name__}>{type(func)}-IN Thread: {nowThread.getName()}")
         func(*args, **kwargs)
-        print(f"now EXIT <{func.__name__}>;{type(func)}")
+        print(f"now EXIT <{func.__name__}>{type(func)}-IN Thread: {nowThread.getName()}")
 
     return infoed_func

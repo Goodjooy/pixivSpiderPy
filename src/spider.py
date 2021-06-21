@@ -19,6 +19,8 @@ recommand_wandon(level:1)
 
 from os import SEEK_CUR
 from time import sleep
+
+from requests.sessions import session
 from src.author import Author
 from src import DIVISION_BY_ALBUM_NAME_AND_ID, referer, userAgent
 from src.album import Album
@@ -49,7 +51,7 @@ class Spider(object):
         for cookie in self.cookies:
             self.session.cookies.set(cookie["name"], cookie["value"])
     
-
+        
         self.session.headers["referer"] = referer
         self.session.headers["host"]="www.pixiv.net"
         self.session.headers["user-Agent"] = userAgent
@@ -88,13 +90,16 @@ class Spider(object):
         """
         self.save_mode = save_mode
 
+
     def append_author_arts(self, ft: Future):
         """
         完成作者信息请求后的回调函数
         """
-        targets = ft.result()
-        self.add_artical(*targets)
-        # self.append_album_download(target_albums)
+        try:
+            targets = ft.result()
+            self.add_artical(*targets)
+        except Exception as err:
+            print("[ERR]" ,err.with_traceback(None))
 
     def append_album_download(self, album_list):
         """
@@ -110,3 +115,5 @@ class Spider(object):
             t = self.info_load_tp.submit(author.load_artical_list)
             t.add_done_callback(self.append_author_arts)
             self.authors_future.append(t)
+
+            

@@ -122,7 +122,7 @@ class Album(object):
 
     def load_image_info(self):
         try:
-            imag_res = self.session.get(albumURL(self.album_id))
+            imag_res = self.session.get(albumURL(self.album_id),timeout=300)
             imag_res.raise_for_status()
 
             json_data: dict = imag_res.json()

@@ -18,6 +18,8 @@ from requests.sessions import Session
 
 
 class Image(object):
+    range20 = range(1, 21)
+
     def __init__(self, url: str, save_path: str, session: Session, chunk_size: int = 1024, err_collect=None) -> None:
         # 图像请求的URL
         self.url: str = url
@@ -103,7 +105,7 @@ class Image(object):
         初始化下载过程，建立下载链接
         """
         # 发送请求
-        self.respond = self.session.get(self.url, stream=True)
+        self.respond = self.session.get(self.url, stream=True,timeout=300)
         # 检查状态码
         self.respond.raise_for_status()
         # 文件大小
@@ -128,7 +130,13 @@ class Image(object):
                 # 已下载位置递增
                 self.download_size += len(data)
 
-                print(f"[{self.download_size}|{self.target_size}]",end="\r")
+                scale = int(self.download_size)/int(self.target_size)
+                x20 = scale*20
+                x100 = scale*100
+
+                v = "".join(["=" if i <= x20 else " " for i in Image.range20])
+                print(
+                    f"[{v}][{self.download_size}|{self.target_size}][{round((x100),2)}%]", end="\r")
         print()
 
     def exit_download(self) -> None:
